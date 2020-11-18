@@ -174,29 +174,56 @@ namespace jsk_pcl_ros
       i_min = i_max_;
     }
 
-    { 
-      ConditionPtr cond (new pcl::ConditionAnd<pcl::PointXYZRGB> ());
-      ComparisonPtr le (new Comparison ("h", pcl::ComparisonOps::LE, h_max));
-      ComparisonPtr ge (new Comparison ("h", pcl::ComparisonOps::GE, h_min));
-      cond->addComparison (le);
-      cond->addComparison (ge);
-      condp->addCondition(cond);
-    }
-    { 
-      ConditionPtr cond (new pcl::ConditionAnd<pcl::PointXYZRGB> ());
-      ComparisonPtr le (new Comparison ("s", pcl::ComparisonOps::LE, s_max));
-      ComparisonPtr ge (new Comparison ("s", pcl::ComparisonOps::GE, s_min));
-      cond->addComparison (le);
-      cond->addComparison (ge);
-      condp->addCondition(cond);
+    {
+      if (negative_) {
+        ConditionPtr cond (new pcl::ConditionOr<pcl::PointXYZRGB> ());
+        ComparisonPtr le (new Comparison ("h", pcl::ComparisonOps::LE, h_min));
+        ComparisonPtr ge (new Comparison ("h", pcl::ComparisonOps::GE, h_max));
+        cond->addComparison (le);
+        cond->addComparison (ge);
+        condp->addCondition(cond);
+      } else {
+        ConditionPtr cond (new pcl::ConditionAnd<pcl::PointXYZRGB> ());
+        ComparisonPtr le (new Comparison ("h", pcl::ComparisonOps::LE, h_max));
+        ComparisonPtr ge (new Comparison ("h", pcl::ComparisonOps::GE, h_min));
+        cond->addComparison (le);
+        cond->addComparison (ge);
+        condp->addCondition(cond);
+      }
     }
     {
-      ConditionPtr cond (new pcl::ConditionAnd<pcl::PointXYZRGB> ());
-      ComparisonPtr le (new Comparison ("i", pcl::ComparisonOps::LE, i_max));
-      ComparisonPtr ge (new Comparison ("i", pcl::ComparisonOps::GE, i_min));
-      cond->addComparison (le);
-      cond->addComparison (ge);
-      condp->addCondition(cond);
+      if (negative_) {
+        ConditionPtr cond (new pcl::ConditionOr<pcl::PointXYZRGB> ());
+        ComparisonPtr le (new Comparison ("s", pcl::ComparisonOps::LE, s_min));
+        ComparisonPtr ge (new Comparison ("s", pcl::ComparisonOps::GE, s_max));
+        cond->addComparison (le);
+        cond->addComparison (ge);
+        condp->addCondition(cond);
+      } else {
+        ConditionPtr cond (new pcl::ConditionAnd<pcl::PointXYZRGB> ());
+        ComparisonPtr le (new Comparison ("s", pcl::ComparisonOps::LE, s_max));
+        ComparisonPtr ge (new Comparison ("s", pcl::ComparisonOps::GE, s_min));
+        cond->addComparison (le);
+        cond->addComparison (ge);
+        condp->addCondition(cond);
+      }
+    }
+    {
+      if (negative_) {
+        ConditionPtr cond (new pcl::ConditionOr<pcl::PointXYZRGB> ());
+        ComparisonPtr le (new Comparison ("i", pcl::ComparisonOps::LE, i_min));
+        ComparisonPtr ge (new Comparison ("i", pcl::ComparisonOps::GE, i_max));
+        cond->addComparison (le);
+        cond->addComparison (ge);
+        condp->addCondition(cond);
+      } else {
+        ConditionPtr cond (new pcl::ConditionAnd<pcl::PointXYZRGB> ());
+        ComparisonPtr le (new Comparison ("i", pcl::ComparisonOps::LE, i_max));
+        ComparisonPtr ge (new Comparison ("i", pcl::ComparisonOps::GE, i_min));
+        cond->addComparison (le);
+        cond->addComparison (ge);
+        condp->addCondition(cond);
+      }
     }
 
     filter_instance_.setCondition (condp);
@@ -335,6 +362,7 @@ namespace jsk_pcl_ros
     bool keep_organized;
     pnh_->param("keep_organized", keep_organized, false);
     pnh_->param("use_indices", use_indices_, false);
+    pnh_->param("negative", negative_, false);
     pub_ = advertise<sensor_msgs::PointCloud2>(*pnh_, "output", 1);
 
     filter_instance_ = pcl::ConditionalRemoval<pcl::PointXYZRGB>(true);

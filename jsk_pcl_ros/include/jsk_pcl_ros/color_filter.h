@@ -87,6 +87,7 @@ namespace jsk_pcl_ros
     boost::shared_ptr<message_filters::Synchronizer<SyncPolicy> >sync_;
 
     bool use_indices_;
+    bool negative_;
   private:
     virtual void onInit();
   };
